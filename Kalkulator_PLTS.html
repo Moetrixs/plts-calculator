@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Kebutuhan PLTS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #f59e0b;
+        }
+        body {
+            background-color: #f3f4f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            ring: 2px;
+            ring-color: var(--primary);
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        details > summary {
+            list-style: none;
+            cursor: pointer;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+        .price-input {
+            width: 120px;
+            text-align: right;
+            padding: 4px 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+        .price-input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-3">
+                <svg class="w-10 h-10 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="3" x2="8" y2="17"></line>
+                    <line x1="16" y1="3" x2="16" y2="17"></line>
+                    <line x1="2" y1="10" x2="22" y2="10"></line>
+                    <path d="M12 17v4"></path>
+                    <path d="M8 21h8"></path>
+                </svg>
+                PLTS SKANSEV
+            </h1>
+            <p class="text-gray-600">Solar Power SKANSEV (SPS) Energy</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-5 card p-6 h-fit">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2 text-amber-600">Konfigurasi Sistem</h2>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Total Beban Harian (Wh/Hari)</label>
+                        <input type="number" id="totalLoad" placeholder="Contoh: 5000" class="w-full p-3 border border-gray-300 rounded-lg">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Jam Matahari (PSH)</label>
+                            <input type="number" id="sunHours" value="3.5" step="0.1" class="w-full p-3 border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tegangan Sistem</label>
+                            <select id="systemVoltage" class="w-full p-3 border border-gray-300 rounded-lg bg-white">
+                                <option value="12">12V</option>
+                                <option value="24" selected>24V</option>
+                                <option value="48">48V</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">DoD Baterai (%)</label>
+                            <input type="number" id="dodValue" value="80" class="w-full p-3 border border-gray-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Otonomi (Hari)</label>
+                            <input type="number" id="autonomyDays" value="1" class="w-full p-3 border border-gray-300 rounded-lg">
+                        </div>
+                    </div>
+
+                    <details class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <summary class="text-sm font-bold text-gray-600 flex justify-between items-center">
+                            <span>Faktor Kerugian (Advanced)</span>
+                            <span class="text-amber-500">⚙️</span>
+                        </summary>
+                        <div class="pt-4 space-y-3">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-500 uppercase">Efisiensi Inverter</label>
+                                    <input type="number" id="effInv" value="90" class="w-full p-2 text-sm border border-gray-300 rounded">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-500 uppercase">Efisiensi MPPT</label>
+                                    <input type="number" id="effScc" value="98" class="w-full p-2 text-sm border border-gray-300 rounded">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-500 uppercase">Kerugian Suhu (%)</label>
+                                    <input type="number" id="lossTemp" value="10" class="w-full p-2 text-sm border border-gray-300 rounded">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-gray-500 uppercase">Debu & Kabel (%)</label>
+                                    <input type="number" id="lossDirt" value="5" class="w-full p-2 text-sm border border-gray-300 rounded">
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Kapasitas Panel (WP)</label>
+                            <select id="panelUnitSize" class="w-full p-3 border border-gray-300 rounded-lg bg-white text-sm">
+                                <option value="100">100 WP</option>
+                                <option value="150" selected>150 WP</option>
+                                <option value="200">200 WP</option>
+                                <option value="450">450 WP</option>
+                                <option value="550">550 WP</option>
+                                <option value="620">620 WP</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Kapasitas Baterai (Ah)</label>
+                            <select id="batteryUnitSize" class="w-full p-3 border border-gray-300 rounded-lg bg-white text-sm">
+                                <option value="50">50 Ah</option>
+                                <option value="100" selected>100 Ah</option>
+                                <option value="150">150 Ah</option>
+                                <option value="200">200 Ah</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="calculatePLTS()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-lg transition duration-200 shadow-lg">
+                        Hitung Akurasi Tinggi
+                    </button>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7 card p-6 flex flex-col">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2 text-green-600">Hasil Analisis Perangkat</h2>
+                
+                <div id="resultPlaceholder" class="flex-grow flex flex-col items-center justify-center text-gray-400 italic text-center p-8">
+                    <p>Hasil perhitungan mendalam akan muncul di sini.</p>
+                </div>
+
+                <div id="resultDisplay" class="hidden space-y-6">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="p-3 bg-amber-50 rounded-lg border border-amber-200 text-center">
+                            <span class="block text-[10px] uppercase font-bold text-amber-600">Kebutuhan PV</span>
+                            <span id="resPanel" class="text-lg font-bold text-gray-800">-</span>
+                        </div>
+                        <div class="p-3 bg-blue-50 rounded-lg border border-blue-200 text-center">
+                            <span class="block text-[10px] uppercase font-bold text-blue-600">Baterai (Ah)</span>
+                            <span id="resBattery" class="text-lg font-bold text-gray-800">-</span>
+                        </div>
+                        <div class="p-3 bg-green-50 rounded-lg border border-green-200 text-center">
+                            <span class="block text-[10px] uppercase font-bold text-green-600">MPPT</span>
+                            <span id="resSCC" class="text-lg font-bold text-gray-800">-</span>
+                        </div>
+                        <div class="p-3 bg-purple-50 rounded-lg border border-purple-200 text-center">
+                            <span class="block text-[10px] uppercase font-bold text-purple-600">Inverter</span>
+                            <span id="resInverter" class="text-lg font-bold text-gray-800">-</span>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <h3 class="font-semibold text-gray-700 mb-2">Penjelasan Faktor Kerugian & Keamanan:</h3>
+                        <div id="lossExplanation" class="text-xs text-gray-500 space-y-1"></div>
+                    </div>
+
+                    <div class="table-container">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-semibold text-gray-700">Bill of Materials (BOM)</h3>
+                            <button onclick="exportToXLS()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md flex items-center gap-1.5 transition shadow-sm">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                Export XLS
+                            </button>
+                        </div>
+                        <table class="w-full text-sm text-left border-collapse" id="bomTable">
+                            <thead class="bg-gray-200 text-gray-700 uppercase text-[10px]">
+                                <tr>
+                                    <th class="p-3 border">Komponen</th>
+                                    <th class="p-3 border">Spesifikasi Detail</th>
+                                    <th class="p-3 border text-center">Qty</th>
+                                    <th class="p-3 border text-right">Harga Satuan (Rp)</th>
+                                    <th class="p-3 border text-right">Subtotal (Rp)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bomBody" class="text-gray-600"></tbody>
+                            <tfoot id="bomFooter" class="bg-gray-50 font-bold text-gray-800"></tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-12 text-center text-gray-500 text-xs">
+            <p>Kalkulasi ini menggunakan standar STC (Standard Test Conditions). Masukkan harga satuan secara manual untuk menghitung anggaran.</p>
+        </footer>
+    </div>
+
+    <script>
+        let currentBOMData = [];
+        let currentSysConfig = {};
+
+        function formatNumber(num) {
+            return num.toLocaleString('id-ID');
+        }
+
+        function updateSubtotals() {
+            let grandTotal = 0;
+            currentBOMData.forEach((item, index) => {
+                const inputEl = document.getElementById(`price-${index}`);
+                const subtotalEl = document.getElementById(`subtotal-${index}`);
+                const priceValue = parseFloat(inputEl.value) || 0;
+                
+                item.userPrice = priceValue;
+                const subtotal = item.qty * priceValue;
+                grandTotal += subtotal;
+                
+                subtotalEl.innerText = subtotal > 0 ? formatNumber(subtotal) : '0';
+            });
+            
+            document.getElementById('grandTotalDisplay').innerText = formatNumber(grandTotal);
+        }
+
+        function calculatePLTS() {
+            const totalLoad = parseFloat(document.getElementById('totalLoad').value);
+            const sunHours = parseFloat(document.getElementById('sunHours').value);
+            const systemVoltage = parseFloat(document.getElementById('systemVoltage').value);
+            const panelUnitSize = parseFloat(document.getElementById('panelUnitSize').value);
+            const batteryUnitSize = parseFloat(document.getElementById('batteryUnitSize').value);
+            const autonomyDays = parseFloat(document.getElementById('autonomyDays').value);
+            const dod = parseFloat(document.getElementById('dodValue').value);
+
+            const effInv = parseFloat(document.getElementById('effInv').value);
+            const effScc = parseFloat(document.getElementById('effScc').value);
+            const lossTemp = parseFloat(document.getElementById('lossTemp').value);
+            const lossDirt = parseFloat(document.getElementById('lossDirt').value);
+
+            if (!totalLoad || totalLoad <= 0) {
+                alert("Mohon masukkan total beban.");
+                return;
+            }
+
+            currentSysConfig = {
+                totalLoad, sunHours, systemVoltage, autonomyDays, dod,
+                panelUnitSize, batteryUnitSize, effInv, effScc, lossTemp, lossDirt
+            };
+
+            const eInv = effInv / 100;
+            const eScc = effScc / 100;
+            const lTemp = lossTemp / 100;
+            const lDirt = lossDirt / 100;
+            const dVal = dod / 100;
+
+            const requiredDcEnergy = totalLoad / eInv;
+            const deratingFactor = (1 - lTemp) * (1 - lDirt);
+            const totalPanelEfficiency = deratingFactor * eScc;
+            const totalWP = requiredDcEnergy / (sunHours * totalPanelEfficiency);
+            const panelCount = Math.ceil(totalWP / panelUnitSize);
+            const finalWP = panelCount * panelUnitSize;
+
+            const requiredAh = (requiredDcEnergy * autonomyDays) / (systemVoltage * dVal);
+            const batCount = Math.ceil(requiredAh / batteryUnitSize);
+            
+            const sccAmperage = (finalWP / systemVoltage) * 1.25;
+            const inverterWatt = Math.max(1000, (totalLoad / 4) * 1.5);
+            
+            const standardRatings = [6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125];
+            const mcbPvRating = Math.ceil(sccAmperage * 1.25);
+            const finalMcbPv = standardRatings.find(r => r >= mcbPvRating) || mcbPvRating;
+            const mcbBatRating = Math.ceil(sccAmperage * 1.35);
+            const finalMcbBat = standardRatings.find(r => r >= mcbBatRating) || mcbBatRating;
+
+            const mc4StandardPair = 1; 
+            const yBranchPair = panelCount > 1 ? (panelCount - 1) : 0;
+
+            document.getElementById('resultPlaceholder').classList.add('hidden');
+            document.getElementById('resultDisplay').classList.remove('hidden');
+
+            document.getElementById('resPanel').innerText = Math.ceil(totalWP) + " WP";
+            document.getElementById('resBattery').innerText = Math.ceil(requiredAh) + " Ah";
+            document.getElementById('resSCC').innerText = Math.ceil(sccAmperage) + " A";
+            document.getElementById('resInverter').innerText = Math.ceil(inverterWatt) + " W";
+
+            document.getElementById('lossExplanation').innerHTML = `
+                <p>• Inverter (${effInv}%): Beban harian DC naik menjadi ${Math.round(requiredDcEnergy)} Wh.</p>
+                <p>• MPPT (${effScc}%): Efisiensi pengisian daya menggunakan teknologi tracking maksimal.</p>
+                <p>• Kerugian Fisik: Panel kehilangan ${Math.round((1-deratingFactor)*100)}% daya akibat suhu & debu.</p>
+                <p>• <b>Konektor:</b> Menggunakan ${panelCount} panel membutuhkan ${yBranchPair} pasang Y-Branch.</p>
+            `;
+
+            currentBOMData = [
+                { name: "Panel Surya", spec: `${panelUnitSize} WP Tier-1 Mono`, qty: panelCount, userPrice: 0 },
+                { name: "Baterai", spec: `${batteryUnitSize} Ah, ${systemVoltage}V Deep Cycle`, qty: batCount, userPrice: 0 },
+                { name: "MPPT Charge Controller", spec: `${Math.ceil(sccAmperage)}A Smart MPPT`, qty: 1, userPrice: 0 },
+                { name: "Inverter", spec: `${Math.ceil(inverterWatt)}W Pure Sine Wave`, qty: 1, userPrice: 0 },
+                { name: "MCB DC 2 Pole (PV)", spec: `${finalMcbPv}A DC Breaker`, qty: 1, userPrice: 0 },
+                { name: "MCB DC 2 Pole (Bat)", spec: `${finalMcbBat}A DC Breaker`, qty: 1, userPrice: 0 },
+                { name: "Kabel PV", spec: "PV1-F 6mm (Roll 15m)", qty: 1, userPrice: 0 },
+                { name: "Konektor MC4 Standar", spec: "IP67 (Pasang)", qty: mc4StandardPair, userPrice: 0 }
+            ];
+
+            if (yBranchPair > 0) {
+                currentBOMData.push({ name: "Konektor MC4 Y-Branch", spec: "Parallel Connector (Pasang)", qty: yBranchPair, userPrice: 0 });
+            }
+            currentBOMData.push({ name: "Mounting System", spec: "Aluminium Rail & Clamp Set", qty: 1, userPrice: 0 });
+
+            document.getElementById('bomBody').innerHTML = currentBOMData.map((item, index) => `
+                <tr>
+                    <td class="p-3 border font-medium text-gray-800">${item.name}</td>
+                    <td class="p-3 border text-xs text-gray-500">${item.spec}</td>
+                    <td class="p-3 border text-center font-bold">${item.qty}</td>
+                    <td class="p-3 border text-right">
+                        <input type="number" id="price-${index}" class="price-input" placeholder="0" oninput="updateSubtotals()">
+                    </td>
+                    <td class="p-3 border text-right font-bold text-gray-700" id="subtotal-${index}">0</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('bomFooter').innerHTML = `
+                <tr>
+                    <td colspan="4" class="p-3 text-right border uppercase">TOTAL ESTIMASI INVESTASI (RP)</td>
+                    <td class="p-3 text-right border text-amber-600 text-lg" id="grandTotalDisplay">0</td>
+                </tr>
+            `;
+        }
+
+        function exportToXLS() {
+            if (currentBOMData.length === 0) {
+                alert("Harap lakukan perhitungan terlebih dahulu.");
+                return;
+            }
+
+            const fileName = `Laporan_PLTS_SKANSEV_${new Date().toISOString().slice(0,10)}.xls`;
+            let grandTotal = 0;
+            
+            let excelRows = currentBOMData.map(item => {
+                const subtotal = item.qty * (item.userPrice || 0);
+                grandTotal += subtotal;
+                return `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.spec}</td>
+                        <td align="center">${item.qty}</td>
+                        <td align="right">${item.userPrice || 0}</td>
+                        <td align="right">${subtotal}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            let excelTemplate = `
+                <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+                <head>
+                    <meta charset="utf-8">
+                    <style>
+                        .header { background-color: #f59e0b; color: white; font-weight: bold; text-align: center; }
+                        .label { background-color: #f3f4f6; font-weight: bold; }
+                        .footer { background-color: #fff7ed; font-weight: bold; }
+                        td, th { border: 1px solid #ccc; padding: 5px; }
+                        .text-cell { mso-number-format:"\\@"; }
+                    </style>
+                </head>
+                <body>
+                    <h2>LAPORAN ESTIMASI PLTS SKANSEV</h2>
+                    
+                    <table border="1">
+                        <tr><th colspan="3" class="header">PARAMETER INPUT & KONFIGURASI</th></tr>
+                        <tr>
+                            <td class="label">Total Beban Harian</td>
+                            <td class="text-cell">${currentSysConfig.totalLoad}</td>
+                            <td>Wh/Hari</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Jam Matahari (PSH)</td>
+                            <td class="text-cell">${currentSysConfig.sunHours}</td>
+                            <td>Jam</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Tegangan Sistem</td>
+                            <td class="text-cell">${currentSysConfig.systemVoltage}</td>
+                            <td>VDC</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Kapasitas Per Panel</td>
+                            <td class="text-cell">${currentSysConfig.panelUnitSize}</td>
+                            <td>WP</td>
+                        </tr>
+                        <tr>
+                            <td class="label">Kapasitas Per Baterai</td>
+                            <td class="text-cell">${currentSysConfig.batteryUnitSize}</td>
+                            <td>Ah</td>
+                        </tr>
+                    </table>
+
+                    <br/>
+
+                    <table border="1">
+                        <thead>
+                            <tr class="header">
+                                <th colspan="5">DAFTAR KEBUTUHAN PERANGKAT (BOM)</th>
+                            </tr>
+                            <tr style="background-color: #e5e7eb; font-weight: bold;">
+                                <th>Komponen</th>
+                                <th>Spesifikasi Detail</th>
+                                <th>Qty</th>
+                                <th>Harga Satuan (Rp)</th>
+                                <th>Subtotal (Rp)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${excelRows}
+                        </tbody>
+                        <tfoot>
+                            <tr class="footer">
+                                <td colspan="4" align="right">TOTAL ESTIMASI INVESTASI</td>
+                                <td align="right">${grandTotal}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob([excelTemplate], { type: 'application/vnd.ms-excel' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.href = url; link.download = fileName;
+            document.body.appendChild(link); link.click();
+            document.body.removeChild(link); URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
